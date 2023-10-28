@@ -4,15 +4,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-     - ":80"
-    depends_on:
-      - nginx
+    volumes:
+      - ./:/var/www
   
-  nginx:
-   build:
+  nginx_devops:
+    build:
       context: .
       dockerfile: DockerfileNginx.DOCKERFILE
+    ports:
+      - 3000:80
+    volumes:
+      - ./:/var/www
+      - ./config/nginx/:/etc/nginx/conf.d/
+    depends_on:
+      - app_web_devops
+
   
       
  
