@@ -5,9 +5,14 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-    environment:
-      NODE_ENV: development
+     - ":80"
+    depends_on:
+      - nginx
+  
+  nginx:
+   build:
+      context: .
+      dockerfile: DockerfileNginx.DOCKERFILE
+  
+      
  

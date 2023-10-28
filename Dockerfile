@@ -1,13 +1,15 @@
-FROM node:14
+FROM node:latest as build
 
-WORKDIR ./
+WORKDIR /var/www
 
-COPY package*.json ./
+COPY package.json .
+COPY package-lock.json .
 
 RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+RUN npm run build
 
-CMD ["npm", "run", "dev"]
+
+EXPOSE 5173
