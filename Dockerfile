@@ -1,15 +1,33 @@
-FROM node:latest as build
+# Stage 1: Development
+FROM node:19.0.0-alpine as development
 
-WORKDIR /var/www
+# Set the working directory
+WORKDIR /home/node
 
-COPY package.json .
-COPY package-lock.json .
+# Copy package.json and install dependencies
+COPY package.json ./
+RUN npm install --only=prod
 
-RUN npm install
+# Copy the source code
+COPY --chown=node:node dist ./dist
 
-COPY . .
+# Stage 2: Production
+FROM node:19.0.0-alpine as production
 
-RUN npm run build
+# Set NODE_ENV to production
+ENV NODE_ENV=production
 
+# Set user and working directory
+USER node
+WORKDIR /home/node
 
-EXPOSE 5173
+# Copy package.json and installed dependencies from the development stage
+COPY --from=development /home/node/package.json ./
+COPY --from=development /home/node/node_modules ./node_modules
+COPY --from=development /home/node/dist ./dist
+
+# Expose the port
+EXPOSE 3000
+
+# Command to start the application
+CMD ["npm", "run", "start"]

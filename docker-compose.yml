@@ -5,20 +5,16 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./:/var/www
-  
+      - ./:/home/node
+
   nginx_devops:
     build:
       context: .
-      dockerfile: DockerfileNginx.DOCKERFILE
+      dockerfile: DockerfileNginx
     ports:
       - 3000:80
     volumes:
-      - ./:/var/www
+      - ./:/home/node
       - ./config/nginx/:/etc/nginx/conf.d/
     depends_on:
       - app_web_devops
-
-  
-      
- 
