@@ -1,33 +1,36 @@
-# Stage 1: Development
-FROM node:19.0.0-alpine as development
+FROM node:20-alpine AS development
 
-# Set the working directory
-WORKDIR /home/node
+WORKDIR /home/node/app
 
-# Copy package.json and install dependencies
-COPY package.json ./
-RUN npm install --only=prod
+COPY package*.json ./
+RUN npm install
 
-# Copy the source code
-COPY --chown=node:node dist ./dist
+# Copie de tous les fichiers sources
+COPY . .
 
-# Stage 2: Production
-FROM node:19.0.0-alpine as production
+RUN npm run build
 
-# Set NODE_ENV to production
-ENV NODE_ENV=production
+FROM node:20-alpine AS build
 
-# Set user and working directory
-USER node
-WORKDIR /home/node
+WORKDIR /home/node/app
+COPY package*.json ./
+#afficher ce qu'il y'a dans  /home/node/app/dist si il n'y a rien arrater le processus
 
-# Copy package.json and installed dependencies from the development stage
-COPY --from=development /home/node/package.json ./
-COPY --from=development /home/node/node_modules ./node_modules
-COPY --from=development /home/node/dist ./dist
+RUN npm install --only=production
 
-# Expose the port
-EXPOSE 3000
+# Copie des fichiers buildés depuis l'étape de développement
+COPY --from=development /home/node/app/dist ./dist
 
-# Command to start the application
-CMD ["npm", "run", "start"]
+# Installation des dépendances de production uniquement
+RUN npm install --only=production
+
+#EXPOSE 3000
+
+FROM nginx:alpine as production
+
+#COPY ./config/nginx/app.conf /etc/nginx/conf.d/app.conf
+
+
+COPY --from=build /home/node/app/dist  /usr/share/nginx/html
+
+
