@@ -1,0 +1,80 @@
+# Pour déployer: kubectl --kubeconfig votre-conf.yaml apply -f deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: demo
+  name: frontend-demo-deployment
+  labels:
+    demo.app: frontend-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      demo.app: frontend-demo
+  template:
+    metadata:
+      labels:
+        demo.app: frontend-demo
+    spec:
+      containers:
+        - name: frontend
+          image: jimbienvenu/frontend-demo
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: demo
+  name: frontend-demo-service
+spec:
+  selector:
+    demo.app: frontend-demo
+  ports:
+    - protocol: TCP
+      port: 4566
+      targetPort: 80
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  namespace: demo
+  labels:
+    app.kubernetes.io/component: controller
+  # Mettre un nom unique pour la classe ingress
+  name: nginx-demo
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: "true"
+spec:
+  controller: k8s.io/ingress-nginx
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-demo-ingress
+  namespace: demo
+spec:
+  # Récupérer le nom de la classe ingress ici
+  ingressClassName: nginx-demo
+  tls:
+    - hosts:
+        - frontend.demo.jbienvenu.fr
+      secretName: frontend-demo-tls
+  rules:
+    - host: frontend.demo.jbienvenu.fr
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: frontend-demo-service
+                port:
+                  number: 4566
