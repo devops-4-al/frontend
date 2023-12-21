@@ -3,23 +3,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: demo
-  name: frontend-demo-deployment
+  namespace: gavin
+  name: frontend-demo-deployment-gavin
   labels:
-    demo.app: frontend-demo
+    demo.app: frontend-demo-gavin
 spec:
   replicas: 2
   selector:
     matchLabels:
-      demo.app: frontend-demo
+      demo.app: frontend-demo-gavin
   template:
     metadata:
       labels:
-        demo.app: frontend-demo
+        demo.app: frontend-demo-gavin
     spec:
       containers:
         - name: frontend
-          image: jimbienvenu/frontend-demo
+          image: jimbienvenu/frontend-demo-gavin
           ports:
             - containerPort: 80
 
@@ -28,11 +28,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: demo
-  name: frontend-demo-service
+  namespace: gavin
+  name: frontend-demo-gavin
 spec:
   selector:
-    demo.app: frontend-demo
+    demo.app: frontend-demo-gavin
   ports:
     - protocol: TCP
       port: 4566
