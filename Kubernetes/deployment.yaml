@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: jimbienvenu/frontend-demo-gavin
+          image: aperano/frontend_app_web_devops:tagname
           ports:
             - containerPort: 80
 
@@ -43,11 +43,11 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
 metadata:
-  namespace: demo
+  namespace: gavin
   labels:
     app.kubernetes.io/component: controller
   # Mettre un nom unique pour la classe ingress
-  name: nginx-demo
+  name: nginx-demo-gavin-frontend
   annotations:
     ingressclass.kubernetes.io/is-default-class: "true"
 spec:
@@ -59,22 +59,24 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: frontend-demo-ingress
-  namespace: demo
+  namespace: gavin
 spec:
   # Récupérer le nom de la classe ingress ici
-  ingressClassName: nginx-demo
+  ingressClassName: nginx-demo-gavin-frontend
   tls:
     - hosts:
-        - frontend.demo.jbienvenu.fr
+        - frontend.4al2.gavin.jbienvenu.fr
       secretName: frontend-demo-tls
   rules:
-    - host: frontend.demo.jbienvenu.fr
+    - host: frontend.4al2.gavin.jbienvenu.fr
       http:
         paths:
           - pathType: Prefix
             path: /
             backend:
               service:
-                name: frontend-demo-service
+                name: frontend-demo-gavin
                 port:
                   number: 4566
+
+#51.159.205.16
