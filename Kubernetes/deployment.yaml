@@ -60,6 +60,8 @@ kind: Ingress
 metadata:
   name: frontend-demo-ingress
   namespace: gavin
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging-cluster-issuer
 spec:
   # Récupérer le nom de la classe ingress ici
   ingressClassName: nginx-demo-gavin-frontend
