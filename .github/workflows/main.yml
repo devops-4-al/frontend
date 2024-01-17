@@ -26,7 +26,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/frontend_app_web_devops:tagname
+          tags: ${{ secrets.DOCKER_USERNAME }}/frontend_app_web_devops:${GITHUB_SHA::7}
 
       - name : Test for docker-compose file
         run: docker-compose up -d
